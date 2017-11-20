@@ -17,7 +17,7 @@ class brick extends myObject {
 export class AppComponent {
   test = [
     new brick(),
-    new myList<brick>(5);
+    new myList<brick>(5),
   ];
 
 }
