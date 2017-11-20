@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('aaasteve App', () => {
+describe('generics in typescript App', () => {
   let page: AppPage;
 
   beforeEach(() => {
