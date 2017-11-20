@@ -2,14 +2,12 @@ import { Component, OnInit } from '@angular/core';
 
 import {iObject, foObject, foCollection, foNode } from './generics'
 
-class lego extends foObject {
+import {myObject, myNode, myList, myComponent } from './generics'
+
+class brick extends myObject {
 }
 
-class block extends foNode {
-}
 
-class brick extends foNode<lego> {
-}
 
 @Component({
   selector: 'app-root',
@@ -17,9 +15,9 @@ class brick extends foNode<lego> {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  test:foObject = new foObject();
-  test1:lego = new lego();
-
-  test3:foCollection<lego> = new foCollection<lego>(5);
+  test = [
+    new brick(),
+    new myList<brick>(5);
+  ];
 
 }

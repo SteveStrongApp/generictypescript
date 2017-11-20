@@ -28,6 +28,25 @@ export class myList<T extends myObject> extends Array<T> {
     }
 }
 
+export class myNode extends myObject {
+
+    _subcomponents: myList<myNode> = new myList<myNode>();
+
+    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
+        this._subcomponents.applyToSubComponents<T>(func, deep);
+    }
+
+    addSubcomponent(obj: myNode) {
+        if (!obj) return;
+        if (!obj.myParent) {
+            obj.myParent = this;
+            obj._index = this._subcomponents.length;
+        }
+        this._subcomponents.push(obj);
+        return obj;
+    }
+}
+
 export class myComponent<T extends myObject> extends myObject {
 
     _subcomponents: myList<T> = new myList<T>();

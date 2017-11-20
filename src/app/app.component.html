@@ -7,8 +7,8 @@
 
 </div>
 
-<pre>{{test | json}}</pre>
-<pre>{{test1 | json}}</pre>
+<pre *ngFor="let item of test">{{item | json}}</pre>
+
 <p>end of test</p>
 
 
