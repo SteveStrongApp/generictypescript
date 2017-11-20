@@ -1,26 +1,69 @@
 
 
-export interface Action<T>
-{
+export interface Action<T> {
     (item: T): void;
 }
 
-export interface Func<T,TResult>
-{
+export interface Func<T, TResult> {
     (item: T): TResult;
 }
 
-export interface iObject {  
+export class myObject {
+    _index: number;
+    myParent: myObject;
+    list: myList<myObject> = new myList<myObject>();
+
+    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
+        this.list.applyToSubComponents<T>(func, deep);
+    }
+}
+
+export class myList<T extends myObject> extends Array<T> {
+
+    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
+        this.forEach(item => {
+            func.apply(this, item);
+            deep && item.applyToSubComponents<T>(func, deep);
+        });
+    }
+}
+
+export class myComponent<T extends myObject> extends myObject {
+
+    _subcomponents: myList<T> = new myList<T>();
+
+    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
+        this._subcomponents.applyToSubComponents<T>(func, deep);
+    }
+
+    addSubcomponent(obj: T) {
+        if (!obj) return;
+        if (!obj.myParent) {
+            obj.myParent = this;
+            obj._index = this._subcomponents.length;
+        }
+        this._subcomponents.push(obj);
+        return obj;
+    }
+}
+
+export interface iObject {
     myParent: iObject;
+    _index: number;
+    _myGuid: string;
+
     asReference(): string;
     getChildAt(i: number): iObject;
     applyToSubComponents(func: Action<iObject>, deep: boolean);
-    mapToSubComponents(func: Func<iObject,iObject>, deep: boolean): any;
+    mapToSubComponents(func: Func<iObject, iObject>, deep: boolean): any;
 }
 
 export class foObject implements iObject {
     myParent: iObject = undefined;
     myName: string = 'unknown';
+    _index: number;
+    _myGuid: string;
+
 
     asReference() {
         if (this.myParent === undefined) {
@@ -38,22 +81,19 @@ export class foObject implements iObject {
     }
 
     applyToSubComponents(func: Action<iObject>, deep: boolean) {
-
     }
-    mapToSubComponents(func: Func<iObject,iObject>, deep: boolean): any {
-
+    mapToSubComponents(func: Func<iObject, iObject>, deep: boolean): any {
     }
 }
 
 export interface iNode extends iObject {
-    _index: number;
-     _myGuid: string;
+
     override(properties?: any);
-    addSubcomponent(obj: iNode);
-    removeSubcomponent(obj: iNode);   
+    addSubcomponent(obj: iObject);
+    removeSubcomponent(obj: iObject);
 }
 
-export class foCollection<T extends iNode> extends foObject {
+export class foCollection<T extends iObject> extends foObject {
     private _memberType;
     private _members: Array<T>;
     get length() {
@@ -72,10 +112,10 @@ export class foCollection<T extends iNode> extends foObject {
         });
     }
 
-    mapToSubComponents(func: Func<T,T>, deep: boolean): any {
+    mapToSubComponents(func: Func<T, T>, deep: boolean): any {
         let result = this._members.map(item => {
             let found = [func(item)];
-            if ( deep ) { 
+            if (deep) {
                 let child = item.applyToSubComponents(func, deep);
                 found.concat(child);
             }
@@ -85,7 +125,7 @@ export class foCollection<T extends iNode> extends foObject {
     }
 }
 
-export class foNode<T extends iNode> extends foObject implements iNode { 
+export class foNode<T extends iObject> extends foObject implements iNode {
 
     _index: number = 0;
     _myGuid: string;
@@ -114,8 +154,13 @@ export class foNode<T extends iNode> extends foObject implements iNode {
         this._subcomponents.removeMember(obj);
     }
 
-    applyToSubComponents(func: Action<T>, deep: boolean) {
+    applyToSubComponents(func: Action<iObject>, deep: boolean) {
         this._subcomponents.applyToSubComponents(func, deep);
     }
+    mapToSubComponents(func: Func<iObject, iObject>, deep: boolean): any {
+
+    }
+
+
 }
 
