@@ -10,36 +10,49 @@ export interface Func<T, TResult> {
 
 export class myObject {
     _index: number;
-    myParent: myObject;
-    list: myList<myObject> = new myList<myObject>();
+    myParent: () => myObject;
+    //list: myList<myObject> = new myList<myObject>();
 
-    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
-        this.list.applyToSubComponents<T>(func, deep);
+    applyToSubComponents(func, deep: boolean) {
+        //this.list.applyToSubComponents(func, deep);
     }
 }
 
-export class myList<T extends myObject> extends Array<T> {
+export class myList<T extends myObject> extends myObject {
+    myName: string = "I am a list";
+    mystuff:Array<T> = new Array<T>();
 
-    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
-        this.forEach(item => {
-            func.apply(this, item);
-            deep && item.applyToSubComponents<T>(func, deep);
+    public applyToSubComponents(func, deep: boolean) {
+        this.mystuff.forEach(item => {
+            func.apply(item, item);
+            deep && item.applyToSubComponents(func, deep);
         });
     }
+    get length() {
+        return this.mystuff.length;
+    }
+
+    push(item) {
+        return this.mystuff.push(item);
+    }
 }
+
 
 export class myNode extends myObject {
 
     _subcomponents: myList<myNode> = new myList<myNode>();
 
-    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
-        this._subcomponents.applyToSubComponents<T>(func, deep);
+    applyToSubComponents(func, deep: boolean) {
+        //let xxx = this._subcomponents.myName;
+        //let yyy = this._subcomponents.applyToSubComponents;
+
+        this._subcomponents.applyToSubComponents(func, deep);
     }
 
     addSubcomponent(obj: myNode) {
         if (!obj) return;
         if (!obj.myParent) {
-            obj.myParent = this;
+            obj.myParent = () => { return this; };
             obj._index = this._subcomponents.length;
         }
         this._subcomponents.push(obj);
@@ -51,14 +64,14 @@ export class myComponent<T extends myObject> extends myObject {
 
     _subcomponents: myList<T> = new myList<T>();
 
-    applyToSubComponents<T>(func: Action<T>, deep: boolean) {
-        this._subcomponents.applyToSubComponents<T>(func, deep);
+    applyToSubComponents(func, deep: boolean) {
+        this._subcomponents.applyToSubComponents(func, deep);
     }
 
     addSubcomponent(obj: T) {
         if (!obj) return;
         if (!obj.myParent) {
-            obj.myParent = this;
+            obj.myParent = () => { return this; };
             obj._index = this._subcomponents.length;
         }
         this._subcomponents.push(obj);
