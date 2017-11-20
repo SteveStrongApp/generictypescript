@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {foObject, foCollection, foNode } from './generics'
+import {iObject, foObject, foCollection, foNode } from './generics'
+
+class lego extends foObject {
+}
 
 @Component({
   selector: 'app-root',
@@ -8,5 +11,8 @@ import {foObject, foCollection, foNode } from './generics'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  test:foObject = new foObject();
+  test1:lego = new lego();
+
+
 }

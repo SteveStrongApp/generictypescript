@@ -1,40 +1,4 @@
-interface KeyValuePair<K, V> extends Array<K | V> {
-    0: K,
-    1: V
-}
 
-
-//https://www.typescriptlang.org/docs/handbook/mixins.html
-function applyMixins(derivedCtor: any, baseCtors: any[]) {
-    baseCtors.forEach(baseCtor => {
-        Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-            derivedCtor.prototype[name] = baseCtor.prototype[name];
-        });
-    });
-}
-
-//this is a type alias 
-type strongbro = 'steve' | 'stu' | 'don';
-
-class root {
-
-}
-
-class baseObj<A extends root> extends root {
-    private ccc: KeyValuePair<number,string> = [1, 'steve'];
-    
-
-    private xEnum: strongbro = 'steve';
-
-    doInit() {
-        this.xEnum = 'stu';
-    }
-
-    logAndReturn<C,A>(thing: C, other: A): C {
-        console.log(thing);
-        return thing;
-    }
-}
 
 export interface Action<T>
 {
@@ -46,7 +10,7 @@ export interface Func<T,TResult>
     (item: T): TResult;
 }
 
-interface iObject {  
+export interface iObject {  
     myParent: iObject;
     asReference(): string;
     getChildAt(i: number): iObject;
@@ -54,8 +18,8 @@ interface iObject {
     mapToSubComponents(func: Func<iObject,iObject>, deep: boolean): any;
 }
 
-export class foObject<T extends iObject> implements iObject {
-    myParent: T = undefined;
+export class foObject implements iObject {
+    myParent: iObject = undefined;
     myName: string = 'unknown';
 
     asReference() {
@@ -69,19 +33,19 @@ export class foObject<T extends iObject> implements iObject {
         return this.myParent ? true : false;
     }
 
-    getChildAt(i: number): T {
+    getChildAt(i: number): iObject {
         return undefined;
     }
 
-    applyToSubComponents(func: Action<T>, deep: boolean) {
+    applyToSubComponents(func: Action<iObject>, deep: boolean) {
 
     }
-    mapToSubComponents(func: Func<T,T>, deep: boolean): any {
+    mapToSubComponents(func: Func<iObject,iObject>, deep: boolean): any {
 
     }
 }
 
-interface iNode extends iObject {
+export interface iNode extends iObject {
     _index: number;
      _myGuid: string;
     override(properties?: any);
@@ -89,7 +53,7 @@ interface iNode extends iObject {
     removeSubcomponent(obj: iNode);   
 }
 
-export class foCollection<T extends iNode> extends foObject<T> {
+export class foCollection<T extends iNode> extends foObject {
     private _memberType;
     private _members: Array<T>;
     get length() {
@@ -121,7 +85,7 @@ export class foCollection<T extends iNode> extends foObject<T> {
     }
 }
 
-export class foNode<T extends iNode> extends foObject<T> implements iNode { 
+export class foNode<T extends iNode> extends foObject implements iNode { 
 
     _index: number = 0;
     _myGuid: string;
