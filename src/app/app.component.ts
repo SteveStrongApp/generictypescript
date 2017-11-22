@@ -43,17 +43,17 @@ class brick extends myObject {
 }
 
 interface xxx<T extends myObject> {
-  things:myList<T>;
+  things: myList<T>;
 }
 
 class legoCore extends myNode {
   description: string = "legoCore";
 
-  _subcomponents:myList<legoCore> = new myList<legoCore>();
+  _subcomponents: myList<legoCore> = new myList<legoCore>();
 
-  public render = (ctx: CanvasRenderingContext2D, deep:boolean = true): void => {
+  public render = (ctx: CanvasRenderingContext2D, deep: boolean = true): void => {
     this.draw(ctx);
-    this._subcomponents.applyToAll(part => {
+    deep && this._subcomponents.applyToAll(part => {
       part.render(ctx);
     });
   }
@@ -99,20 +99,39 @@ class lego extends legoCore {
 }
 
 
+class door extends lego {
+  description: string = "The Door Is Red";
+
+  public draw = (ctx: CanvasRenderingContext2D): void => {
+
+    ctx.save();
+    ctx.fillStyle = 'red';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = .8;
+    ctx.fillRect(130, 200, 100, 250);
+
+    ctx.restore();
+  }
+
+}
+
+
 class wall extends lego {
   description: string = "The Wall Is Red";
 
-  public draw = (ctx: CanvasRenderingContext2D): void => {
-    
-        ctx.save();
-        ctx.fillStyle = 'green';
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = .8;
-        ctx.fillRect(130, 60, 100, 150);
+  _subcomponents:myList<door> = new myList<door>();
 
-        ctx.restore();
-      }
-  
+  public draw = (ctx: CanvasRenderingContext2D): void => {
+
+    ctx.save();
+    ctx.fillStyle = 'green';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = .8;
+    ctx.fillRect(130, 60, 100, 150);
+
+    ctx.restore();
+  }
+
 }
 
 class house extends lego {
@@ -136,14 +155,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     new myList<brick>(),
   ];
 
-  myHouse:house = new house();
+  myHouse: house = new house();
 
- 
+
   constructor() {
     let obj = this.myHouse
     this.test.push(obj);
 
-    obj.addSubcomponent(new wall());
+    let wa = new wall();
+    wa.addSubcomponent(new door())
+
+    obj.addSubcomponent(wa);
     obj.addSubcomponent(new wall());
     obj.addSubcomponent(new wall());
 
