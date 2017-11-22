@@ -28,6 +28,7 @@ export class myList<T extends myObject> extends myObject {
             deep && item.applyToSubComponents(func, deep);
         });
     }
+    
     get length() {
         return this.mystuff.length;
     }
@@ -35,12 +36,21 @@ export class myList<T extends myObject> extends myObject {
     push(item) {
         return this.mystuff.push(item);
     }
+
+    applyToAll(func: Action<T>) {
+        this.mystuff.forEach(func);
+    }
 }
+
 
 
 export class myNode extends myObject {
 
     _subcomponents: myList<myNode> = new myList<myNode>();
+
+    get Subcomponents():Array<myNode> {
+        return this._subcomponents.mystuff;
+    }
 
     applyToSubComponents(func, deep: boolean) {
         //let xxx = this._subcomponents.myName;
