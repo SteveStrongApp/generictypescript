@@ -42,10 +42,6 @@ export class Sceen2D {
 class brick extends myObject {
 }
 
-interface xxx<T extends myObject> {
-  things: myList<T>;
-}
-
 class legoCore extends myNode {
   description: string = "legoCore";
 
